@@ -42,4 +42,14 @@ app.get("/tasks", (req, res) => {
   });
 });
 
+app.post("/tasks", (req, res) => {
+  console.log(req.body);
+
+  res.status(201).json({
+    success: true,
+    message: "Task created successfully",
+    data: req.body,
+  });
+});
+
 export default app;

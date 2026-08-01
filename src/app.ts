@@ -4,6 +4,9 @@ import express from "express";
 // express => creates an express application instance
 const app = express();
 
+// middleware => Every request passes through middleware before it reaches your route.
+app.use(express.json());
+
 // GET requests retrieve data
 // "/" => route path
 

@@ -1,6 +1,5 @@
-import e, { response } from "express";
 import express from "express";
-import { request } from "http";
+import taskRouter from "./routes/task.routes.js";
 
 // express => creates an express application instance
 const app = express();
@@ -19,37 +18,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Task Manager API is running" });
 });
 
-app.get("/tasks", (req, res) => {
-  const tasks = [
-    {
-      id: 1,
-      title: "Learning express with typescript",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Building Task Manager API",
-      completed: true,
-    },
-  ];
-
-  // Why return an object instead of just the array?
-  //This is a common API pattern because later we can easily add more information (like pagination or messages) without changing the overall response structure.
-  res.status(200).json({
-    success: true,
-    count: tasks.length,
-    data: tasks,
-  });
-});
-
-app.post("/tasks", (req, res) => {
-  console.log(req.body);
-
-  res.status(201).json({
-    success: true,
-    message: "Task created successfully",
-    data: req.body,
-  });
-});
+//Task Routes
+app.use("/tasks", taskRouter);
 
 export default app;

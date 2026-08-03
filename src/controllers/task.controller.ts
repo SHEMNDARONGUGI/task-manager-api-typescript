@@ -1,4 +1,6 @@
 import type { Request, Response } from "express";
+import { tasks } from "../data/tasks.js";
+import { request } from "http";
 
 interface CreateTaskBody {
   title: string;
@@ -6,21 +8,29 @@ interface CreateTaskBody {
 }
 
 export const getAllTasks = (req: Request, res: Response): void => {
-  console.log(req);
-  console.log(res);
-
   res.status(200).json({
     success: true,
-    message: "Get all tasks",
+    count: tasks.length,
+    data: tasks,
   });
 };
 
 export const getTaskById = (req: Request, res: Response): void => {
-  const { id } = req.params;
+  const taskId = Number(req.params.id);
+
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) {
+    res.status(404).json({
+      success: false,
+      message: "Task not found",
+    });
+
+    return;
+  }
 
   res.status(200).json({
     success: true,
-    message: `Fetching task with ID: ${id}`,
+    data: task,
   });
 };
 
@@ -40,9 +50,17 @@ export const createTask = (
     return;
   }
 
+  const newTask = {
+    id: tasks.length + 1,
+    title,
+    completed,
+  };
+
+  tasks.push(newTask);
+
   res.status(201).json({
     success: true,
     message: "Task created successfully",
-    data: { title, completed },
+    data: newTask,
   });
 };

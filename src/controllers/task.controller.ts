@@ -119,3 +119,27 @@ export const updateTask = (
     data: task,
   });
 };
+
+export const deleteTask = (
+  req: Request<{ id: string }>,
+  res: Response,
+): void => {
+  const taskId = Number(req.params.id);
+
+  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+
+  if (taskIndex === -1) {
+    res.status(404).json({
+      success: false,
+      message: "Task not found. ",
+    });
+    return;
+  }
+
+  tasks.splice(taskIndex, 1);
+
+  res.status(200).json({
+    success: true,
+    message: "Task deleted successfully",
+  });
+};

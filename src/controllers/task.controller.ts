@@ -1,9 +1,14 @@
-import type { Request, Response } from "express";
+import { response, type Request, type Response } from "express";
 import { tasks } from "../data/tasks.js";
 import { request } from "http";
 
 interface CreateTaskBody {
   title: string;
+  completed?: boolean;
+}
+
+interface UpdateTaskBody {
+  title?: string;
   completed?: boolean;
 }
 
@@ -62,5 +67,38 @@ export const createTask = (
     success: true,
     message: "Task created successfully",
     data: newTask,
+  });
+};
+
+export const updateTask = (
+  req: Request<{ id: string }, {}, UpdateTaskBody>,
+  res: Response,
+): void => {
+  const taskId = Number(req.params.id);
+
+  const task = tasks.find((task) => task.id === taskId);
+
+  if (!task) {
+    res.status(404).json({
+      success: false,
+      message: "Task not found",
+    });
+    return;
+  }
+
+  const { title, completed } = req.body;
+
+  if (title !== undefined) {
+    task.title = title;
+  }
+
+  if (completed !== undefined) {
+    task.completed = completed;
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Task updated Successfully.",
+    data: task,
   });
 };

@@ -1,6 +1,5 @@
-import { response, type Request, type Response } from "express";
+import { type Request, type Response } from "express";
 import { tasks } from "../data/tasks.js";
-import { request } from "http";
 
 interface CreateTaskBody {
   title: string;
@@ -87,6 +86,24 @@ export const updateTask = (
   }
 
   const { title, completed } = req.body;
+
+  if (title === undefined && completed === undefined) {
+    res.status(400).json({
+      success: false,
+      message: "Provide at least one field to update.",
+    });
+
+    return;
+  }
+
+  if (title !== undefined && title.trim().length === 0) {
+    res.status(400).json({
+      success: false,
+      message: "Title cannot be empty.",
+    });
+
+    return;
+  }
 
   if (title !== undefined) {
     task.title = title;

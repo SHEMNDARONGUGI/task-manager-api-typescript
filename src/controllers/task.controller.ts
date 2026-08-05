@@ -1,5 +1,6 @@
 import { type Request, type Response } from "express";
-import { tasks } from "../data/tasks.js";
+
+import { getAllTasksService } from "../services/task.service.js";
 
 interface CreateTaskBody {
   title: string;
@@ -10,19 +11,22 @@ interface UpdateTaskBody {
   title?: string;
   completed?: boolean;
 }
+let allTasks = getAllTasksService();
 
 export const getAllTasks = (req: Request, res: Response): void => {
+  const allTasks = getAllTasksService();
+
   res.status(200).json({
     success: true,
-    count: tasks.length,
-    data: tasks,
+    count: allTasks.length,
+    data: allTasks,
   });
 };
 
 export const getTaskById = (req: Request, res: Response): void => {
   const taskId = Number(req.params.id);
 
-  const task = tasks.find((task) => task.id === taskId);
+  const task = allTasks.find((task) => task.id === taskId);
   if (!task) {
     res.status(404).json({
       success: false,
@@ -55,12 +59,12 @@ export const createTask = (
   }
 
   const newTask = {
-    id: tasks.length + 1,
+    id: allTasks.length + 1,
     title,
     completed,
   };
 
-  tasks.push(newTask);
+  allTasks.push(newTask);
 
   res.status(201).json({
     success: true,
@@ -75,7 +79,7 @@ export const updateTask = (
 ): void => {
   const taskId = Number(req.params.id);
 
-  const task = tasks.find((task) => task.id === taskId);
+  const task = allTasks.find((task) => task.id === taskId);
 
   if (!task) {
     res.status(404).json({
@@ -126,7 +130,7 @@ export const deleteTask = (
 ): void => {
   const taskId = Number(req.params.id);
 
-  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+  const taskIndex = allTasks.findIndex((task) => task.id === taskId);
 
   if (taskIndex === -1) {
     res.status(404).json({
@@ -136,7 +140,7 @@ export const deleteTask = (
     return;
   }
 
-  tasks.splice(taskIndex, 1);
+  allTasks.splice(taskIndex, 1);
 
   res.status(200).json({
     success: true,

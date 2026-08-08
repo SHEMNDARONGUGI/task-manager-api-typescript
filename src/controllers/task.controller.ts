@@ -12,13 +12,17 @@ interface CreateTaskBody {
   title: string;
   completed?: boolean;
 }
+
 interface UpdateTaskBody {
   title?: string;
   completed?: boolean;
 }
 
-export const getAllTasks = (req: Request, res: Response): void => {
-  const allTasks = getAllTasksService();
+export const getAllTasks = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const allTasks = await getAllTasksService();
 
   res.status(200).json({
     success: true,
@@ -27,10 +31,13 @@ export const getAllTasks = (req: Request, res: Response): void => {
   });
 };
 
-export const getTaskById = (req: Request, res: Response): void => {
-  const taskId = Number(req.params.id);
+export const getTaskById = async (
+  req: Request<{ id: string }>,
+  res: Response,
+): Promise<void> => {
+  const taskId = req.params.id;
 
-  const task = getTaskByIdService(taskId);
+  const task = await getTaskByIdService(taskId);
   if (!task) {
     res.status(404).json({
       success: false,
@@ -47,10 +54,10 @@ export const getTaskById = (req: Request, res: Response): void => {
 };
 
 // Request<Params, ResBody, ReqBody>
-export const createTask = (
+export const createTask = async (
   req: Request<{}, {}, CreateTaskBody>,
   res: Response,
-): void => {
+): Promise<void> => {
   const { title, completed = false } = req.body;
 
   if (!title || title.trim().length === 0) {
@@ -62,7 +69,7 @@ export const createTask = (
     return;
   }
 
-  const newTask = createTaskService({
+  const newTask = await createTaskService({
     title,
     completed,
   });
@@ -74,12 +81,12 @@ export const createTask = (
   });
 };
 
-export const updateTask = (
+export const updateTask = async (
   req: Request<{ id: string }, {}, UpdateTaskBody>,
   res: Response,
-): void => {
+): Promise<void> => {
   const { title, completed } = req.body;
-  const taskId = Number(req.params.id);
+  const taskId = req.params.id;
 
   if (title === undefined && completed === undefined) {
     res.status(400).json({
@@ -99,7 +106,7 @@ export const updateTask = (
     return;
   }
 
-  const updatedTask = updateTaskService(taskId, {
+  const updatedTask = await updateTaskService(taskId, {
     title,
     completed,
   });
@@ -120,14 +127,14 @@ export const updateTask = (
   });
 };
 
-export const deleteTask = (
+export const deleteTask = async (
   req: Request<{ id: string }>,
   res: Response,
-): void => {
-  const taskId = Number(req.params.id);
-  const deleted = deleteTaskService(taskId);
+): Promise<void> => {
+  const taskId = req.params.id;
+  const deletedTask = await deleteTaskService(taskId);
 
-  if (!deleted) {
+  if (!deletedTask) {
     res.status(404).json({
       success: false,
       message: "Task not found",
